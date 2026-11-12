@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Network Traffic Analyzer</title>
+  <meta name="description" content="Enter the traffic between your devices and find the most important node, a 2D view of the network, and a traffic forecast.">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Linear algebra meets networking</p>
+      <h1>Network Traffic Analyzer</h1>
+      <p class="lead">Enter how much traffic flows between your devices. We find the most important device, squash the network into a 2D picture, and forecast where traffic settles.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card" aria-labelledby="input-title">
+      <div class="card-head">
+        <h2 id="input-title"><span class="step">1</span> Enter your network</h2>
+        <p>Rename the devices, add or remove them, and fill in the traffic between each pair (for example MB per hour).</p>
+      </div>
+
+      <div class="toolbar">
+        <button type="button" id="add-device" class="btn">+ Add device</button>
+        <button type="button" id="load-sample" class="btn">Load sample</button>
+        <button type="button" id="randomize" class="btn">Randomize</button>
+        <button type="button" id="clear" class="btn">Clear</button>
+        <span class="spacer"></span>
+        <button type="button" id="import-csv" class="btn">Import CSV</button>
+        <button type="button" id="export-csv" class="btn">Export CSV</button>
+        <input type="file" id="csv-file" accept=".csv,text/csv" hidden>
+      </div>
+
+      <div class="matrix-wrap">
+        <table id="matrix" aria-label="Traffic matrix"></table>
+      </div>
+
+      <label class="check">
+        <input type="checkbox" id="symmetric" checked>
+        Keep traffic symmetric (A to B equals B to A)
+      </label>
+
+      <div class="actions">
+        <button type="button" id="analyze" class="btn primary">Analyze network</button>
+        <span id="status" class="status" role="status" aria-live="polite"></span>
+      </div>
+      <p id="error" class="error" role="alert" hidden></p>
+    </section>
+
+    <section id="results" hidden aria-labelledby="results-title">
+      <h2 id="results-title" class="section-title"><span class="step">2</span> Results</h2>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">Most important device</span>
+          <span class="stat-value" id="stat-top">-</span>
+          <span class="stat-note" id="stat-top-note"></span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Kept by the 2D view</span>
+          <span class="stat-value" id="stat-kept">-</span>
+          <span class="stat-note">of the network's total strength</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Dominant eigenvalue</span>
+          <span class="stat-value" id="stat-eig">-</span>
+          <span class="stat-note">overall traffic intensity</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <h3>Node importance</h3>
+          <p class="hint">A device scores high when it is well connected to other well-connected devices, not just when it has a lot of traffic itself.</p>
+          <div class="chart-box"><canvas id="chart-importance" aria-label="Bar chart of node importance"></canvas></div>
+        </article>
+
+        <article class="card">
+          <h3>2D view of the network</h3>
+          <p class="hint">Each device becomes two numbers. Devices that sit close together behave similarly in the traffic matrix.</p>
+          <div class="chart-box"><canvas id="chart-reduced" aria-label="Scatter plot of devices in two dimensions"></canvas></div>
+        </article>
+      </div>
+
+      <article class="card">
+        <h3>Traffic prediction</h3>
+        <p class="hint">Starting from equal shares, we apply the traffic pattern again and again. The lines settle onto each device's long-run share of traffic.</p>
+        <div class="chart-box tall"><canvas id="chart-prediction" aria-label="Line chart of predicted traffic share per device"></canvas></div>
+      </article>
+
+      <article class="card">
+        <h3>Numbers</h3>
+        <div class="matrix-wrap">
+          <table id="results-table" class="results-table"></table>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <p>Built with Python (NumPy, FastAPI) and Chart.js.</p>
+  </footer>
+</body>
+</html>
